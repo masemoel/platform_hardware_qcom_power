@@ -237,6 +237,7 @@ static void process_video_encode_hint(void *metadata)
     } else if (video_encode_metadata.state == 0) {
         if (is_interactive_governor(governor)) {
             pthread_mutex_lock(&video_encode_lock);
+            video_encode_hint_should_enable = false;
             if (video_encode_hint_is_enabled == true) {
                 undo_hint_action(cur_hint_id);
                 video_encode_hint_is_enabled = false;
