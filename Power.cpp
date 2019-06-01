@@ -231,6 +231,21 @@ Return<void> Power::powerHintAsync(PowerHint hint, int32_t data) {
     return powerHint(hint, data);
 }
 
+status_t Power::registerAsSystemService() {
+    status_t ret = 0;
+
+    ret = IPower::registerAsService();
+    if (ret != 0) {
+        ALOGE("Failed to register IPower (%d)", ret);
+        goto fail;
+    } else {
+        ALOGI("Successfully registered IPower");
+    }
+
+fail:
+    return ret;
+}
+
 }  // namespace implementation
 }  // namespace V1_1
 }  // namespace power
