@@ -76,13 +76,6 @@ static bool is_target_8916(void)
     return is_8916;
 }
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 static int resources_interaction_fling_boost[] = {
     ALL_CPUS_PWR_CLPS_DIS,
     SCHED_BOOST_ON,

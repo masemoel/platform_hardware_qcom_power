@@ -51,13 +51,6 @@
 
 static int first_display_off_hint;
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 /* fling boost: min 3 CPUs, min 1.1 GHz */
 static int resources_interaction_fling_boost[] = {
     CPUS_ONLINE_MIN_3,

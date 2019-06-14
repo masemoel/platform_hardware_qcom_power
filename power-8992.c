@@ -51,13 +51,6 @@
 #include "performance.h"
 #include "power-common.h"
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 pthread_mutex_t video_encode_lock = PTHREAD_MUTEX_INITIALIZER;
 uintptr_t video_encode_hint_counter = 0;
 bool video_encode_hint_should_enable = false;

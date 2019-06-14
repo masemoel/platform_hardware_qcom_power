@@ -56,13 +56,6 @@ const int kMinInteractiveDuration = 500; /* ms */
 
 static int video_encode_hint_sent;
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 static void process_video_encode_hint(void *metadata)
 {
     char governor[80];

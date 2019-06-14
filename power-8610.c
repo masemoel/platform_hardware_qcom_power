@@ -48,13 +48,6 @@
 #include "performance.h"
 #include "power-common.h"
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 static int resources_interaction_boost[] = {
     CPUS_ONLINE_MIN_2,
     0x20B,

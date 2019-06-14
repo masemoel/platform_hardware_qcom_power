@@ -52,13 +52,6 @@
 #define CHECK_HANDLE(x) ((x)>0)
 #define NUM_PERF_MODES  3
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 typedef enum {
     NORMAL_MODE       = 0,
     SUSTAINED_MODE    = 1,
@@ -193,8 +186,6 @@ static int process_video_encode_hint(void *metadata)
 int power_hint_override(power_hint_t hint, void *data)
 {
     int ret_val = HINT_NONE;
-
-<<<<<<< HEAD
     if (hint == POWER_HINT_SET_PROFILE) {
         if (set_power_profile(*(int32_t *)data) < 0)
             ALOGE("Setting power profile failed. perf HAL not started?");

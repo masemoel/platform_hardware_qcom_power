@@ -65,13 +65,5 @@ static bool is_target_8064(void)
 
     return is_8064;
 }
-
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
     return HINT_NONE;
 }

@@ -52,13 +52,6 @@
 #define CHECK_HANDLE(x) ((x)>0)
 #define NUM_PERF_MODES  3
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
 typedef enum {
     NORMAL_MODE       = 0,
     SUSTAINED_MODE    = 1,

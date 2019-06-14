@@ -69,14 +69,6 @@ static bool is_target_8974pro(void)
     return is_8974pro;
 }
 
-#ifdef INTERACTION_BOOST
-int get_number_of_profiles()
-{
-    return 0;
-}
-#endif
-
-
 static int resources_interaction_fling_boost[] = {
     CPUS_ONLINE_MIN_3,
     0x20F,
