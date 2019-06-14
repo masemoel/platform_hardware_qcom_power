@@ -66,88 +66,12 @@ static bool is_target_8064(void)
     return is_8064;
 }
 
-static int current_power_profile = PROFILE_BALANCED;
-
-static int profile_high_performance_8960[] = {
-    CPUS_ONLINE_MIN_2,
-};
-
-static int profile_high_performance_8064[] = {
-    CPUS_ONLINE_MIN_4,
-};
-
-static int profile_power_save_8960[] = {
-    /* Don't do anything for now */
-};
-
-static int profile_power_save_8064[] = {
-    CPUS_ONLINE_MAX_LIMIT_2,
-};
-
 #ifdef INTERACTION_BOOST
 int get_number_of_profiles()
 {
-    return 3;
+    return 0;
 }
 #endif
-
-static int set_power_profile(int profile)
-{
-    int ret = -EINVAL;
-    const char *profile_name = NULL;
-
-    if (profile == current_power_profile)
-        return 0;
-
-    ALOGV("%s: Profile=%d", __func__, profile);
-
-    if (current_power_profile != PROFILE_BALANCED) {
-        undo_hint_action(DEFAULT_PROFILE_HINT_ID);
-        ALOGV("%s: Hint undone", __func__);
-        current_power_profile = PROFILE_BALANCED;
-    }
-
-    if (profile == PROFILE_POWER_SAVE) {
-        int* resource_values = is_target_8064() ?
-                profile_power_save_8064 : profile_power_save_8960;
-
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID,
-                resource_values, ARRAY_SIZE(resource_values));
-        profile_name = "powersave";
-
-    } else if (profile == PROFILE_HIGH_PERFORMANCE) {
-        int *resource_values = is_target_8064() ?
-                profile_high_performance_8064 : profile_high_performance_8960;
-
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID,
-                resource_values, ARRAY_SIZE(resource_values));
-        profile_name = "performance";
-
-    } else if (profile == PROFILE_BALANCED) {
-        ret = 0;
-        profile_name = "balanced";
-    }
-
-    if (ret == 0) {
-        current_power_profile = profile;
-        ALOGD("%s: Set %s mode", __func__, profile_name);
-    }
-    return ret;
-}
-
-int power_hint_override(power_hint_t hint, void *data)
-{
-    if (hint == POWER_HINT_SET_PROFILE) {
-        if (set_power_profile(*(int32_t *)data) < 0)
-            ALOGE("Setting power profile failed. perfd not started?");
-        return HINT_HANDLED;
-    }
-
-    // Skip other hints in high/low power modes
-    if (current_power_profile == PROFILE_POWER_SAVE ||
-            current_power_profile == PROFILE_HIGH_PERFORMANCE) {
-        return HINT_HANDLED;
-    }
 
     return HINT_NONE;
 }

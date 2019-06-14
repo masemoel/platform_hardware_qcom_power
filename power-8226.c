@@ -49,68 +49,12 @@
 #include "performance.h"
 #include "power-common.h"
 
-static int current_power_profile = PROFILE_BALANCED;
-
-static int profile_high_performance[] = {
-    CPUS_ONLINE_MIN_4,
-    CPU0_MIN_FREQ_TURBO_MAX,
-    CPU1_MIN_FREQ_TURBO_MAX,
-    CPU2_MIN_FREQ_TURBO_MAX,
-    CPU3_MIN_FREQ_TURBO_MAX
-};
-
-static int profile_power_save[] = {
-    CPUS_ONLINE_MAX_LIMIT_2,
-    CPU0_MAX_FREQ_NONTURBO_MAX,
-    CPU1_MAX_FREQ_NONTURBO_MAX,
-    CPU2_MAX_FREQ_NONTURBO_MAX,
-    CPU3_MAX_FREQ_NONTURBO_MAX
-};
-
 #ifdef INTERACTION_BOOST
 int get_number_of_profiles()
 {
-    return 3;
+    return 0;
 }
 #endif
-
-static int set_power_profile(int profile)
-{
-    int ret = -EINVAL;
-    const char *profile_name = NULL;
-
-    if (profile == current_power_profile)
-        return 0;
-
-    ALOGV("%s: Profile=%d", __func__, profile);
-
-    if (current_power_profile != PROFILE_BALANCED) {
-        undo_hint_action(DEFAULT_PROFILE_HINT_ID);
-        ALOGV("%s: Hint undone", __func__);
-        current_power_profile = PROFILE_BALANCED;
-    }
-
-    if (profile == PROFILE_POWER_SAVE) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID, profile_power_save,
-                ARRAY_SIZE(profile_power_save));
-        profile_name = "powersave";
-
-    } else if (profile == PROFILE_HIGH_PERFORMANCE) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID,
-                profile_high_performance, ARRAY_SIZE(profile_high_performance));
-        profile_name = "performance";
-
-    } else if (profile == PROFILE_BALANCED) {
-        ret = 0;
-        profile_name = "balanced";
-    }
-
-    if (ret == 0) {
-        current_power_profile = profile;
-        ALOGD("%s: Set %s mode", __func__, profile_name);
-    }
-    return ret;
-}
 
 static int resources_interaction_boost[] = {
     CPUS_ONLINE_MIN_2,
@@ -125,18 +69,6 @@ int power_hint_override(power_hint_t hint, void *data)
     long long elapsed_time;
     static int s_previous_duration = 0;
     int duration;
-
-    if (hint == POWER_HINT_SET_PROFILE) {
-        if (set_power_profile(*(int32_t *)data) < 0)
-            ALOGE("Setting power profile failed. mpdecision not started?");
-        return HINT_HANDLED;
-    }
-
-    // Skip other hints in high/low power modes
-    if (current_power_profile == PROFILE_POWER_SAVE ||
-            current_power_profile == PROFILE_HIGH_PERFORMANCE) {
-        return HINT_HANDLED;
-    }
 
     switch (hint) {
         case POWER_HINT_INTERACTION:

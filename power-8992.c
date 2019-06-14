@@ -51,98 +51,12 @@
 #include "performance.h"
 #include "power-common.h"
 
-static int current_power_profile = PROFILE_BALANCED;
-
-static int profile_high_performance[] = {
-    SCHED_BOOST_ON, CPUS_ONLINE_MAX,
-    ALL_CPUS_PWR_CLPS_DIS, 0x0901,
-    CPU0_MIN_FREQ_TURBO_MAX,
-    CPU1_MIN_FREQ_TURBO_MAX,
-    CPU2_MIN_FREQ_TURBO_MAX,
-    CPU3_MIN_FREQ_TURBO_MAX,
-    CPU4_MIN_FREQ_TURBO_MAX,
-    CPU5_MIN_FREQ_TURBO_MAX
-};
-
-static int profile_power_save[] = {
-    CPUS_ONLINE_MPD_OVERRIDE, 0x0A03,
-    CPU0_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU1_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU2_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU3_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU4_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU5_MAX_FREQ_NONTURBO_MAX - 2
-};
-
-static int profile_bias_power[] = {
-    0x0A03, 0x0902,
-    CPU0_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU1_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU2_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU3_MAX_FREQ_NONTURBO_MAX - 2,
-    CPU4_MAX_FREQ_NONTURBO_MAX,
-    CPU5_MAX_FREQ_NONTURBO_MAX
-};
-
-static int profile_bias_performance[] = {
-    CPUS_ONLINE_MAX_LIMIT_MAX,
-    CPU4_MIN_FREQ_NONTURBO_MAX + 1,
-    CPU5_MIN_FREQ_NONTURBO_MAX + 1
-};
-
 #ifdef INTERACTION_BOOST
 int get_number_of_profiles()
 {
-    return 5;
+    return 0;
 }
 #endif
-
-static int set_power_profile(int profile)
-{
-    int ret = -EINVAL;
-    const char *profile_name = NULL;
-
-    if (profile == current_power_profile)
-        return 0;
-
-    ALOGV("%s: Profile=%d", __func__, profile);
-
-    if (current_power_profile != PROFILE_BALANCED) {
-        undo_hint_action(DEFAULT_PROFILE_HINT_ID);
-        ALOGV("%s: Hint undone", __func__);
-        current_power_profile = PROFILE_BALANCED;
-    }
-
-    if (profile == PROFILE_POWER_SAVE) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID, profile_power_save,
-                ARRAY_SIZE(profile_power_save));
-        profile_name = "powersave";
-
-    } else if (profile == PROFILE_HIGH_PERFORMANCE) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID,
-                profile_high_performance, ARRAY_SIZE(profile_high_performance));
-        profile_name = "performance";
-
-    } else if (profile == PROFILE_BIAS_POWER) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID, profile_bias_power,
-                ARRAY_SIZE(profile_bias_power));
-        profile_name = "bias power";
-
-    } else if (profile == PROFILE_BIAS_PERFORMANCE) {
-        ret = perform_hint_action(DEFAULT_PROFILE_HINT_ID,
-                profile_bias_performance, ARRAY_SIZE(profile_bias_performance));
-        profile_name = "bias perf";
-    } else if (profile == PROFILE_BALANCED) {
-        ret = 0;
-        profile_name = "balanced";
-    }
-
-    if (ret == 0) {
-        current_power_profile = profile;
-        ALOGD("%s: Set %s mode", __func__, profile_name);
-    }
-    return ret;
-}
 
 pthread_mutex_t video_encode_lock = PTHREAD_MUTEX_INITIALIZER;
 uintptr_t video_encode_hint_counter = 0;
@@ -189,6 +103,8 @@ static void* video_encode_hint_function(void* arg) {
     return NULL;
 }
 
+=======
+>>>>>>> 33fb26a... power: Remove POWER_HINT_SET_PROFILE
 static void process_video_encode_hint(void *metadata)
 {
     char governor[80];
@@ -270,18 +186,6 @@ int power_hint_override(power_hint_t hint, void *data)
     long long elapsed_time;
     static int s_previous_duration = 0;
     int duration;
-
-    if (hint == POWER_HINT_SET_PROFILE) {
-        if (set_power_profile(*(int32_t *)data) < 0)
-            ALOGE("Setting power profile failed. perfd not started?");
-        return HINT_HANDLED;
-    }
-
-    // Skip other hints in high/low power modes
-    if (current_power_profile == PROFILE_POWER_SAVE ||
-            current_power_profile == PROFILE_HIGH_PERFORMANCE) {
-        return HINT_HANDLED;
-    }
 
     switch (hint) {
         case POWER_HINT_INTERACTION:
