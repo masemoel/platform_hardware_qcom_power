@@ -206,9 +206,6 @@ int power_hint_override(power_hint_t hint, void *data)
             current_power_profile == PROFILE_HIGH_PERFORMANCE) {
         return HINT_HANDLED;
     }
-
-=======
->>>>>>> 33fb26a... power: Remove POWER_HINT_SET_PROFILE
     switch (hint) {
         case POWER_HINT_VIDEO_ENCODE:
             ret_val = process_video_encode_hint(data);

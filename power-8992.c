@@ -103,8 +103,6 @@ static void* video_encode_hint_function(void* arg) {
     return NULL;
 }
 
-=======
->>>>>>> 33fb26a... power: Remove POWER_HINT_SET_PROFILE
 static void process_video_encode_hint(void *metadata)
 {
     char governor[80];
